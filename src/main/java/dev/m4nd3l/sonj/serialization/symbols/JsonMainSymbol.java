@@ -1,4 +1,4 @@
-package dev.m4nd3l.sonj.json;
+package dev.m4nd3l.sonj.serialization.symbols;
 
 public enum JsonMainSymbol {
     OPEN_CURLY_BRACKET("{", 1, BracketType.OPEN),

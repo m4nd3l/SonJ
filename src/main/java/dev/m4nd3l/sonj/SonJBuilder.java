@@ -21,10 +21,11 @@ import java.text.SimpleDateFormat;
 public class SonJBuilder {
     private boolean ignoreSerializedNameAnnotation = false;
     private boolean ignoreHideAnnotation = false;
-    private boolean acceptTransientKeyword = true;
+    private boolean acceptTransientFields = true;
     private boolean excludeFieldsWithoutExposeAnnotation = false;
     private boolean makeNullIfCircularReference = false;
     private boolean ignorePrivateFields = false;
+    private boolean ignoreStaticFields = true;
     private boolean serializeNulls = false;
     private Style style = new Compact();
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -159,7 +160,7 @@ public class SonJBuilder {
     }
 
     /**
-     * <p>Ignores the {@link dev.m4nd3l.sonj.annotations.Hide} annotation.</p>
+     * <p>Ignores fields with the {@link dev.m4nd3l.sonj.annotations.Hide} annotation.</p>
      * <b>Example:</b>
      * <pre>{@code
      * @Hide String name = "Luigi";
@@ -175,7 +176,7 @@ public class SonJBuilder {
     }
 
     /**
-     * <p>Ignores the {@code transient} keyword.</p>
+     * <p>Ignores fields with the {@code transient} keyword.</p>
      * <b>Example:</b>
      * <pre>{@code
      * transient String company_name = "Microsoft";
@@ -185,8 +186,8 @@ public class SonJBuilder {
      * }</pre>
      * @return This builder for chaining.
      */
-    public SonJBuilder ignoreTransientKeyword() {
-        this.acceptTransientKeyword = false;
+    public SonJBuilder ignoreTransientFields() {
+        this.acceptTransientFields = false;
         return this;
     }
 
@@ -212,6 +213,22 @@ public class SonJBuilder {
     }
 
     /**
+     * <p>Excludes {@code static} fields from serialization.</p>
+     * <b>Example:</b>
+     * <pre>{@code
+     * static String company_name = "Microsoft";
+     * String manager_name = "John";
+     * // Default: {"manager_name": "John"}
+     * // Enabled: {"company_name": "Microsoft", "manager_name": "John"}
+     * }</pre>
+     * @return This builder for chaining.
+     */
+    public SonJBuilder serializeStaticFields() {
+        this.ignoreStaticFields = false;
+        return this;
+    }
+
+    /**
      * Creates the final {@link SonJ} instance.
      * @return A configured SonJ serializer.
      */
@@ -220,8 +237,9 @@ public class SonJBuilder {
                 ignoreSerializedNameAnnotation,
                 ignoreHideAnnotation,
                 makeNullIfCircularReference,
-                acceptTransientKeyword,
+                acceptTransientFields,
                 ignorePrivateFields,
+                ignoreStaticFields,
                 excludeFieldsWithoutExposeAnnotation,
                 serializeNulls,
                 style,

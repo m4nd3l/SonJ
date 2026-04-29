@@ -14,5 +14,7 @@ public record FieldMetadata(String name, Map<Class<? extends Annotation>, Annota
     public boolean has(Class<? extends Annotation> clazz) { return annotations.containsKey(clazz); }
 
     public boolean isPrivate() { return accessFlags.contains(AccessFlag.PRIVATE); }
+    public boolean isStatic() { return accessFlags.contains(AccessFlag.STATIC); }
+    public boolean isFinal() { return accessFlags.contains(AccessFlag.FINAL); }
     public boolean isTransient() { return accessFlags.contains(AccessFlag.TRANSIENT); }
 }
