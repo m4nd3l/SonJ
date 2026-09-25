@@ -122,7 +122,7 @@ public class JsonSerializer {
             return;
         }
 
-        if (!sonjInstance.classFieldsAnnotations.containsKey(source.getClass())) sonjInstance.addAnnotations(source);
+        if (!sonjInstance.classFieldsAnnotations.containsKey(source.getClass())) sonjInstance.addAnnotations(source.getClass());
 
         builder.append(JsonMainSymbol.OPEN_CURLY_BRACKET, appendIndent).newLine();
         Field[] fields = getFields(source);
@@ -134,7 +134,7 @@ public class JsonSerializer {
 
             // Check if suitable for serialization
             if (sonjInstance.excludeFieldsWithoutExposeAnnotation && !isExposeForSerialization(metadata)) continue;
-            if (!sonjInstance.ignoreHideAnnotation && metadata.has(Hide.class)) continue;
+            if (!sonjInstance.ignoreHideAnnotation && metadata.has(Hide.class) && metadata.get(Hide.class).serialize()) continue;
             if (!sonjInstance.acceptTransientKeyword && metadata.isTransient()) continue;
             if (sonjInstance.ignoreStaticFields && metadata.isStatic()) continue;
 
@@ -177,8 +177,6 @@ public class JsonSerializer {
         if (fields.isEmpty()) return new Field[] {};
         return fields.toArray(new Field[0]);
     }
-
-
 
     private boolean isExposeForSerialization(FieldMetadata metadata) {
         if (!metadata.has(Expose.class)) return false;

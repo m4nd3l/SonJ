@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessFlag;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -54,6 +55,8 @@ public class SonJ {
         this.classFieldsAnnotations = new HashMap<>();
     }
 
+    public static SonJBuilder builder() { return new SonJBuilder(); }
+
     public String serialize(Object source) throws CircularReferenceException, IOException {
         if (source == null) return "null";
         JsonSerializer serializer = new JsonSerializer(source, this);
@@ -68,14 +71,22 @@ public class SonJ {
         return file;
     }
 
-    public <T> T deserialize(String source, Class<T> clazz) {
-        return null;
+    public <T> T deserialize(String source, Class<T> target)
+            throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+        JsonDeserializer<T> deserializer = new JsonDeserializer<>(target, source, this);
+        return deserializer.deserialize();
     }
 
-    protected void addAnnotations(Object source) {
-        if (classFieldsAnnotations.containsKey(source.getClass())) return;
+    public <T> T deserialize(File source, Class<T> target)
+            throws IOException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+        JsonDeserializer<T> deserializer = new JsonDeserializer<>(target, source, this);
+        return deserializer.deserialize();
+    }
+
+    protected void addAnnotations(Class<?> clazz) {
+        if (classFieldsAnnotations.containsKey(clazz)) return;
         Map<String, FieldMetadata> classFieldMetadata = new HashMap<>();
-        Class<?> currentClass = source.getClass();
+        Class<?> currentClass = clazz;
 
         while (currentClass != null && currentClass != Object.class) {
             Field[] fields = currentClass.getDeclaredFields();
@@ -90,12 +101,6 @@ public class SonJ {
             }
             currentClass = currentClass.getSuperclass();
         }
-        classFieldsAnnotations.put(source.getClass(), classFieldMetadata);
-    }
-
-    private boolean isExposeForDeserialization(FieldMetadata metadata) {
-        if (!metadata.has(Expose.class)) return false;
-        if (!metadata.get(Expose.class).deserialize()) return false;
-        return true;
+        classFieldsAnnotations.put(clazz, classFieldMetadata);
     }
 }

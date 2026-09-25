@@ -16,6 +16,7 @@ import java.lang.annotation.*;
  * }
  * }</pre>
  * <p>Serializes to: {"product_id": ...} if ignoreSerializedNameAnnotation is false, otherwise it serializes to: {"id": ...}</p>
+ * @implNote The field name will still be valid for serialization
  * @see SonJBuilder#ignoreSerializedNameAnnotation()
  */
 @Documented

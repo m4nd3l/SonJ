@@ -1,6 +1,6 @@
 plugins {
-    `java-library`
-    `maven-publish`
+    id 'java'
+    id 'java-library'
 }
 
 group = "dev.m4nd3l.sonj"
@@ -18,12 +18,4 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
-        }
-    }
 }
